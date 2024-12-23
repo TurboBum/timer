@@ -6,9 +6,9 @@ from PyQt5.QtWidgets import (
     QPushButton, QVBoxLayout, QHBoxLayout, QMessageBox, QDateEdit, QTimeEdit
 )
 from PyQt5 import QtCore
-from pus import push_message
+# from pus import push_message
 
-push_message('Дьяволок', 'мудень', 'icon/key.jpeg')
+# push_message('ЖопоДавка', 'Дьяволок', 'мудень', 'icon/key.jpeg')
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -22,12 +22,17 @@ class MainWindow(QWidget):
         # Пример использования Qt.FramelessWindowHint для полной настройки окна
         # self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Window)
 
+        # Пример безрамачного применения и поверх всех  окон
+        # self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
+
 
         self.button = QPushButton(u'Закрыть', self)
         self.button.clicked.connect(self.on_click)
 
         self.text_time_minutes = QLabel("Введите через сколько должен сработать таймер")
         self.time_minute = QTimeEdit(self)
+        self.time_minute.setDisplayFormat("mm:ss")  # Устанавливаем формат на минуты и секунды
+        self.time_minute.setTime(self.time_minute.time().fromString("00:00", "mm:ss"))  # Устанавливаем начальное время
         self.minutes_button = QPushButton("Запустить таймер")  # Кнопка "Запустить таймер"
         self.minutes_button.clicked.connect(self.handle_minutes_button_click)
 
@@ -77,7 +82,7 @@ class MainWindow(QWidget):
     
     def handle_minutes_button_click(self):
         # Логика для запуска таймера
-        minutes = self.time_minute.time().toString("mm")
+        minutes = self.time_minute.time().toString("mm:ss")
         print(minutes)  # Выводим значение в консоль для проверки
         # ... (Ваша реализация запуска таймера)
 
@@ -91,7 +96,7 @@ if __name__ == "__main__":
     import sys
     app = QApplication(sys.argv)
     window = MainWindow()
-    #window.resize(600, 400) # Это больше не нужно, так как мы используем full screen.
+    window.resize(600, 400)
     window.show()
-    window.showFullScreen()  # Переводим окно в полноэкранный режим
+    # window.showFullScreen()  # Переводим окно в полноэкранный режим
     sys.exit(app.exec_())
