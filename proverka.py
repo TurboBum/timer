@@ -17,4 +17,4 @@ def monitor_process(process_name):
         time.sleep(5)  # Проверка каждые 5 секунд
 
 if __name__ == "__main__":
-    monitor_process('Python')  # Укажите здесь имя вашего приложения
+    monitor_process('python.exe')  # Укажите здесь имя вашего приложения
