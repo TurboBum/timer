@@ -6,6 +6,8 @@ from PyQt5.QtWidgets import (
     QPushButton, QVBoxLayout, QHBoxLayout, QMessageBox, QTimeEdit
 )
 from PyQt5.QtGui import QPixmap, QIcon
+import timer
+
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -93,6 +95,8 @@ class MainWindow(QWidget):
         minutes = self.time_minute.time().toString("mm:ss")
         print(minutes)  # Выводим значение в консоль для проверки
         # ... (Ваша реализация запуска таймера)
+        self.timer_window = timer.start(int(minutes[:2]), int(minutes[3:]))  # Получаем объект окна из модуля timer
+        self.timer_window.show()  # Добавляем вызов show() для отображения окна
 
     def handle_hours_button_click(self):
         # Логика для добавления напоминания
