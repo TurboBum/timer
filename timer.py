@@ -1,14 +1,20 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout
-from PyQt5.QtCore import Qt, QTimer, QTime, pyqtSlot, QRect, QPoint, QRectF
+from PyQt5.QtCore import Qt, QTimer, QTime, pyqtSlot, QRect, QPoint, QRectF, QUrl
 from PyQt5.QtGui import QPainter, QPen, QFont, QColor, QFontMetrics
-
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 
 class Window(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Обратный отчёт')
         self.setFixedSize(300, 300)
+
+        # создание музыкального проигрывателя
+        self.media_player = QMediaPlayer()
+        url = QUrl.fromLocalFile("music/03b3a427eeb52e37b162584ef1f2fb25.mp3")
+        content = QMediaContent(url)
+        self.media_player.setMedia(content)
 
         self.time_label = QLabel('00:00', self)
         self.time_label.setAlignment(Qt.AlignCenter)
@@ -47,6 +53,7 @@ class Window(QWidget):
         else:
             self.timer.stop()
             self.time_label.setText("Время вышло!")
+            self.media_player.play()
             self._arc_length = 360.0
 
         self.update()  # перерисовываем круговой индикатор
