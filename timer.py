@@ -1,8 +1,11 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout
-from PyQt5.QtCore import Qt, QTimer, QTime, pyqtSlot, QRect, QPoint, QRectF, QUrl
-from PyQt5.QtGui import QPainter, QPen, QFont, QColor, QFontMetrics
+from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QVBoxLayout,
+                             QSystemTrayIcon, QMenu, QAction, QMessageBox)
+from PyQt5.QtGui import QIcon, QFont, QPainter, QPen, QColor
+from PyQt5.QtCore import QTimer, Qt, QTime, QRectF, QUrl, pyqtSlot
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+
+import pus
 
 class Window(QWidget):
     def __init__(self):
@@ -32,6 +35,24 @@ class Window(QWidget):
         self._start_angle = 90  # начало кругового индикатора
         self._arc_length = 0  # длина кругового индикатора
 
+        # Настройка иконки системного трея
+        self.tray_icon = QSystemTrayIcon(QIcon("icon/c6d7e2ee38d97a222fc315cc3cf19652.jpg"), self) 
+        self.tray_icon.activated.connect(self.on_tray_icon_activated)
+        self.tray_icon.show()
+
+        # Создаем контекстное меню для трея
+        tray_menu = QMenu(self)
+        show_action = QAction("Показать окно", self)
+        show_action.triggered.connect(self.show)
+        quit_action = QAction("Выйти", self)
+        quit_action.triggered.connect(QApplication.instance().quit)
+        tray_menu.addAction(show_action)
+        tray_menu.addAction(quit_action)
+        self.tray_icon.setContextMenu(tray_menu)
+
+        # Добавлен вызов show() в конце __init__
+        self.show() # Вызывается для первоначального отображения
+
     def start_countdown(self, minutes, seconds):
         """
         Запускает обратный отсчет с указанным временем.
@@ -53,6 +74,8 @@ class Window(QWidget):
         else:
             self.timer.stop()
             self.time_label.setText("Время вышло!")
+            pus.push_message("Таймер", "Остановка таймера", "Время выщло")
+            print("Время вышло!")
             self.media_player.play()
             self._arc_length = 360.0
 
@@ -93,16 +116,32 @@ class Window(QWidget):
     def set_text_time(self, text):
         self.time_label.setText(text)
 
+    def on_tray_icon_activated(self, reason):
+        """Обработчик активации иконки в трее."""
+        if reason == QSystemTrayIcon.ActivationReason.Trigger:
+            self.show()
+            self.closeEvent()
 
-# Функция запуска таймера
+    def closeEvent(self, event):
+        """Обработчик события закрытия окна."""
+        event.ignore()  # Игнорируем закрытие
+        self.hide()
+        self.tray_icon.showMessage("Приложение запущено в фоновом режиме",
+                                    "Приложение свернуто в системный трей.",
+                                    QSystemTrayIcon.Information)
+
+
 def start(min, sec):
     window = Window()
     window.show()
     window.start_countdown(min, sec)
     return window
 
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = start(1, 30)
+    window = Window()
+   
+    # Запуск обратного отсчета на 1 минуту 30 секунд
+    window.start_countdown(0, 10)
+
     sys.exit(app.exec_())

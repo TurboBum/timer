@@ -5,5 +5,6 @@ def push_message(name, title, message, icon=None):
     notification.application_name = name
     notification.title = title
     notification.message = message
-    notification.icon = icon
+    if icon is not None:
+        notification.icon = icon
     notification.send()
