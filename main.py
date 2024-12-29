@@ -7,6 +7,30 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QPixmap, QIcon
 import timer
+import timern
+from datetime import datetime, timedelta
+
+
+def time_until(target_hour, target_minute):
+    # Получаем текущее время
+    now = datetime.now()
+    current_time = now.replace(second=0, microsecond=0)
+
+    # Создаем объект времени для заданного времени
+    target_time = current_time.replace(hour=target_hour, minute=target_minute)
+
+    # Если целевое время меньше текущего, добавляем один день
+    if target_time < current_time:
+        target_time += timedelta(days=1)
+
+    # Находим разницу во времени
+    time_difference = target_time - current_time
+
+    # Извлекаем часы и минуты
+    hours_remaining = time_difference.seconds // 3600
+    minutes_remaining = (time_difference.seconds // 60) % 60
+
+    return hours_remaining, minutes_remaining
 
 
 class MainWindow(QWidget):
@@ -103,6 +127,9 @@ class MainWindow(QWidget):
         selected_time = self.time_hours.time().toString("hh:mm")
         print(f"Напоминание на {selected_time}") # Выводим значение в консоль
         # ... (Ваша реализация добавления напоминания)
+        hours, minutes = time_until(int(selected_time[:2]), int(selected_time[3:]))
+        self.timern_window = timern.start(hours, minutes, self.text.text())  # Получаем объект окна из модуля timer
+        self.timern_window.show()  # Добавляем вызов show() для отображения окна
 
 if __name__ == "__main__":
     import sys
